@@ -20,9 +20,7 @@ import org.slf4j.LoggerFactory;
  */
 public class PackageMetaInfo {
 
-  /**
-   * show stacktrace, when exception catched.
-   */
+  /** show stacktrace, when exception catched. */
   public static boolean SHOW_STACKTRACE = true;
 
   private static final Logger LOG = LoggerFactory.getLogger(PackageMetaInfo.class);
@@ -108,37 +106,30 @@ public class PackageMetaInfo {
     apiVersion = attributes.getValue("Specification-Version");
   }
 
-  /**
-   * @return the title
-   */
+  /** @return the title */
   public String getTitle() {
     return title;
   }
 
-  /**
-   * @return the version
-   */
+  /** @return the version */
   public String getVersion() {
     return version;
   }
 
-  /**
-   * @return the builtDate
-   */
+  /** @return the builtDate */
   public String getBuiltDateStr() {
     return builtDate;
   }
 
-  /**
-   * @return the builtDate
-   */
+  /** @return the builtDate */
   public LocalDate getBuiltDate() {
     try {
       return LocalDate.parse(builtDate, DateTimeFormatter.ofPattern(dateFormat));
     } catch (Throwable ex) {
       if (SHOW_STACKTRACE) {
         LOG.error(
-                String.format("Can't parse built date [%s] with format [%s]", builtDate, dateFormat), ex);
+            String.format("Can't parse built date [%s] with format [%s]", builtDate, dateFormat),
+            ex);
       } else {
         LOG.error("Can't parse built date [{}] with format [{}]", builtDate, dateFormat);
       }
@@ -146,24 +137,21 @@ public class PackageMetaInfo {
     }
   }
 
-  /**
-   * @return the author
-   */
+  /** @return the author */
   public String getAuthor() {
     return author;
   }
 
-  /**
-   * @return the apiVersion
-   */
+  /** @return the apiVersion */
   public String getAPIVersion() {
     return apiVersion;
   }
 
   public String versionFullString() {
-    String str = String.format(
-                    "%s, version %s, built %s by %s",
-                    getTitle(), getVersion(), getBuiltDate(), getAuthor());
+    String str =
+        String.format(
+            "%s, version %s, built %s by %s",
+            getTitle(), getVersion(), getBuiltDate(), getAuthor());
     return str;
   }
 
@@ -178,5 +166,4 @@ public class PackageMetaInfo {
     meta.read(PackageMetaInfo.class);
     return meta;
   }
-
 }
