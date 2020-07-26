@@ -18,9 +18,14 @@ import org.slf4j.LoggerFactory;
  *
  * @author Walery Wysotsky <dev@wysotsky.info>
  */
-public class MetaInfo {
+public class PackageMetaInfo {
 
-  private static final Logger LOG = LoggerFactory.getLogger(MetaInfo.class);
+  /**
+   * show stacktrace, when exception catched.
+   */
+  public static boolean SHOW_STACKTRACE = true;
+
+  private static final Logger LOG = LoggerFactory.getLogger(PackageMetaInfo.class);
   private static final String DEFAULT_DATE_FORMAT = "dd-MM-yyyy HH:mm:ss";
   private static final String MANIFEST_PATH = "/META-INF/MANIFEST.MF";
   private static final String CLASS_EXTENSION = ".class";
@@ -29,33 +34,24 @@ public class MetaInfo {
   private String version;
   private String apiVersion;
   private String builtDate;
-  private String builtBy;
+  private String author;
+
   private final String dateFormat;
 
-  public MetaInfo() {
-    this(MetaInfo.class, DEFAULT_DATE_FORMAT);
+  public PackageMetaInfo() {
+    this.dateFormat = DEFAULT_DATE_FORMAT;
   }
 
-  public MetaInfo(Class<?> clazz) {
-    this(clazz, DEFAULT_DATE_FORMAT);
-  }
-
-  public MetaInfo(Class<?> clazz, String dateFormat) {
+  public PackageMetaInfo(String dateFormat) {
     this.dateFormat = dateFormat;
-    init(clazz);
   }
 
-  public MetaInfo(File jarFile) {
-    this.dateFormat = DEFAULT_DATE_FORMAT;
-    init(jarFile);
-  }
-
-  public MetaInfo(InputStream manifestStream) {
-    this.dateFormat = DEFAULT_DATE_FORMAT;
-    init(manifestStream);
-  }
-
-  private void init(Class<?> clazz) {
+  /**
+   * Read meta info from package, which contains given class.
+   *
+   * @param clazz
+   */
+  public void read(Class<?> clazz) {
     String className = clazz.getSimpleName() + CLASS_EXTENSION;
     String classPath = clazz.getResource(className).toString();
     LOG.debug("Class path = {}", classPath);
@@ -72,98 +68,115 @@ public class MetaInfo {
     }
     try {
       try (InputStream stream = new URL(manifestPath).openStream()) {
-        init(stream);
+        read(new Manifest(stream));
       }
     } catch (IOException ex) {
-      LOG.error(String.format("Can't load manifest from manifest: [%s]", manifestPath), ex);
+      if (SHOW_STACKTRACE) {
+        LOG.error(String.format("Can't load manifest from manifest: [%s]", manifestPath), ex);
+      } else {
+        LOG.error("Can't load manifest from manifest: [{}]", manifestPath);
+      }
     }
   }
 
-  private void init(File jarFile) {
+  /**
+   * Read meta info from package.
+   *
+   * @param jarFile
+   */
+  public void read(File jarFile) {
     try {
       try (InputStream stream = new FileInputStream(jarFile)) {
         JarInputStream jar = new JarInputStream(stream);
-        init(jar.getManifest());
+        read(jar.getManifest());
       }
     } catch (IOException ex) {
-      LOG.error(String.format("Can't load manifest from JAR: [%s]", jarFile), ex);
+      if (SHOW_STACKTRACE) {
+        LOG.error(String.format("Can't load manifest from JAR: [%s]", jarFile), ex);
+      } else {
+        LOG.error("Can't load manifest from JAR: [{}]", jarFile);
+      }
     }
   }
 
-  private void init(InputStream manifestStream) {
-    try {
-      init(new Manifest(manifestStream));
-    } catch (IOException ex) {
-      LOG.error("Can't load manifest", ex);
-    }
-  }
-
-  private void init(Manifest manifest) {
+  private void read(Manifest manifest) {
     Attributes attributes = manifest.getMainAttributes();
     title = attributes.getValue("Implementation-Title");
     version = attributes.getValue("Implementation-Version");
     builtDate = attributes.getValue("Implementation-Time");
-    builtBy = attributes.getValue("Built-By");
+    author = attributes.getValue("Built-By");
     apiVersion = attributes.getValue("Specification-Version");
   }
 
-  /** @return the title */
+  /**
+   * @return the title
+   */
   public String getTitle() {
     return title;
   }
 
-  /** @return the version */
+  /**
+   * @return the version
+   */
   public String getVersion() {
     return version;
   }
 
-  /** @return the builtDate */
+  /**
+   * @return the builtDate
+   */
   public String getBuiltDateStr() {
     return builtDate;
   }
 
-  /** @return the builtDate */
+  /**
+   * @return the builtDate
+   */
   public LocalDate getBuiltDate() {
     try {
       return LocalDate.parse(builtDate, DateTimeFormatter.ofPattern(dateFormat));
     } catch (Throwable ex) {
-      LOG.error(
-          String.format("Can't parse built date [%s] with format [%s]", builtDate, dateFormat), ex);
+      if (SHOW_STACKTRACE) {
+        LOG.error(
+                String.format("Can't parse built date [%s] with format [%s]", builtDate, dateFormat), ex);
+      } else {
+        LOG.error("Can't parse built date [{}] with format [{}]", builtDate, dateFormat);
+      }
       return LocalDate.now();
     }
   }
 
-  /** @return the builtBy */
-  public String getBuiltBy() {
-    return builtBy;
+  /**
+   * @return the author
+   */
+  public String getAuthor() {
+    return author;
   }
 
-  /** @return the apiVersion */
+  /**
+   * @return the apiVersion
+   */
   public String getAPIVersion() {
     return apiVersion;
   }
 
-  public static final String version() {
-    return versionString(MetaInfo.class);
-  }
-
-  public static final String versionString(Class<?> clazz) {
-    MetaInfo info = new MetaInfo(clazz);
-    String str =
-        String.format(
-            "%s, version %s, built %s by %s",
-            info.getTitle(), info.getVersion(), info.getBuiltDate(), info.getBuiltBy());
-    //  log.info(str);
+  public String versionFullString() {
+    String str = String.format(
+                    "%s, version %s, built %s by %s",
+                    getTitle(), getVersion(), getBuiltDate(), getAuthor());
     return str;
   }
 
-  public static final void print() {
-    print(MetaInfo.class);
+  public static PackageMetaInfo build(Class<?> clazz) {
+    PackageMetaInfo meta = new PackageMetaInfo();
+    meta.read(clazz);
+    return meta;
   }
 
-  public static final void print(Class<?> clazz) {
-    String str = versionString(clazz);
-    //  log.info(str);
-    System.out.println(str);
+  public static PackageMetaInfo build() {
+    PackageMetaInfo meta = new PackageMetaInfo();
+    meta.read(PackageMetaInfo.class);
+    return meta;
   }
+
 }

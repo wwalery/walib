@@ -2,6 +2,6 @@
 
 Start from Java11
 
-## Version
+## PackageMetaInfo
 
 Read meta information (MANIFEST.MF) from package, which contains given class.
