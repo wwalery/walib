@@ -72,7 +72,7 @@ public class PackageMetaInfo {
       if (SHOW_STACKTRACE) {
         LOG.error(String.format("Can't load manifest from manifest: [%s]", manifestPath), ex);
       } else {
-        LOG.error("Can't load manifest from manifest: [{}]", manifestPath);
+        LOG.error("Can't load manifest from [{}]", manifestPath);
       }
     }
   }
