@@ -10,6 +10,6 @@ Read meta information (MANIFEST.MF) from package, which contains given class.
 
 Common utilities.
 
-## ResourceLoader
+## ResourceUtils
 
-Resource extraction from JAR/ZIP/directory
+Resource extraction utilities.
