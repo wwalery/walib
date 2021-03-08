@@ -12,9 +12,9 @@ import org.junit.jupiter.api.Test;
 /** @author Walery Wysotsky <dev@wysotsky.info> */
 public class ResourceLoaderTest {
 
-  private static final String TEST_JAR = "build/resources/test/test.jar";
-  private static final String TEST_ZIP = "build/resources/test/test.zip";
-  private static final String TEST_DIR = "build/resources/test/test.dir";
+  static final String TEST_JAR = "build/resources/test/test.jar";
+  static final String TEST_ZIP = "build/resources/test/test.zip";
+  static final String TEST_DIR = "build/resources/test/test.dir";
 
   /** Test of load method, of class ClasspathResourceUtil. */
   @Test
