@@ -1,46 +1,43 @@
 plugins {
-  id "net.ossindex.audit" version "0.1.1"
-  id 'com.github.sherter.google-java-format' version '0.9'
+  id "net.ossindex.audit" version "0.4.11"
+  id 'java-library'
+  id 'com.diffplug.spotless' version "${spotlessPluginVersion}"
+  id 'net.ltgt.errorprone' version "${errorPronePluginVersion}"
+  
   id 'checkstyle'
+  id 'maven-publish'
+  id 'signing'
 }
 
 
-apply plugin: 'java'
-apply plugin: 'jacoco'
-apply plugin: 'idea'
-apply plugin: 'checkstyle'
-apply plugin: 'maven'
-apply plugin: 'signing'
-apply plugin: 'com.github.sherter.google-java-format'
-
 ext.javaVersion = JavaVersion.VERSION_11
 
-idea.module.downloadJavadoc = true
 java {
   sourceCompatibility = javaVersion
   targetCompatibility = javaVersion
 }
 
-
-
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
-tasks.withType(JavaCompile) {
-  options.encoding = 'UTF-8'
-  options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation" << "-Werror" << "-Xlint:all" << "-Xlint:-processing"
-}
+spotless {
+  java {
+    toggleOffOn('fmt:off', 'fmt:on')
+    removeUnusedImports()
+    importOrder()
+    eclipse().configFile("${rootDir}/formatter.xml")    
+  }
+}    
+
 
 checkstyle {
   configFile file("checkstyle.xml")
-  toolVersion '8.26';
 }
 
 tasks.withType(Checkstyle) {
-// Specify all files that should be checked
-  classpath = files()
-  source "${project.rootDir}"
+//  classpath = files()
+//  source "${project.rootDir}"
 
 // Define the output folder of the generated reports
   reports {
@@ -54,40 +51,90 @@ tasks.withType(Checkstyle) {
     }
   }
 }
-// Execute Checkstyle on all files
-task checkstyle(type: Checkstyle) {
-}
-
-task checkstyleChanged(type: Checkstyle) {
-    def changedFiles = System.getProperty('changedFiles', '').split(',')
-    include changedFiles
-}
-
-task checkChanged {
-  dependsOn checkstyleChanged
-}
-
 
 
 dependencies {
+  annotationProcessor 'org.immutables:value:2.9.3'
+  compileOnly 'org.immutables:value:2.9.3'
+  testCompileOnly 'org.immutables:value:2.9.3'
+  compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
 
-// https://mvnrepository.com/artifact/org.projectlombok/lombok
-//  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
-//  annotationProcessor "org.projectlombok:lombok:1.18.12"
-//  testImplementation group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
-//  testAnnotationProcessor "org.projectlombok:lombok:1.18.12"
+  implementation "org.slf4j:slf4j-api:${slf4jVersion}"
+  runtimeOnly "ch.qos.logback:logback-classic:${logbackVersion}"
+  runtimeOnly "ch.qos.logback:logback-core:${logbackVersion}"
+  implementation "org.apache.commons:commons-lang3:${commonsLangVersion}"
+//  implementation "org.apache.commons:commons-collections4:${commonsCollectionsVersion}"
+  
 
-// https://mvnrepository.com/artifact/com.google.guava/guava
-//  implementation group: 'com.google.guava', name: 'guava', version: '29.0-jre'
+  errorprone "com.google.errorprone:error_prone_core:${errorProneVersion}"
 
-  implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
-  testRuntimeOnly group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
-
-  testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.6.2'
-  testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.6.2'
-
+  testImplementation "org.junit.jupiter:junit-jupiter:${junitVersion}"
+  testImplementation "org.assertj:assertj-core:${assertjVersion}"
+// https://mvnrepository.com/artifact/org.hsqldb/hsqldb
+  testImplementation "org.hsqldb:hsqldb:${hsqldbVersion}"
+// https://mvnrepository.com/artifact/org.hsqldb/sqltool
+  testImplementation "org.hsqldb:sqltool:${hsqldbVersion}"
 
 }
+
+
+compileJava {
+  options.encoding = 'UTF-8'
+  options.compilerArgs << '-parameters' << "-Xlint:unchecked" << "-Xlint:deprecation"
+  dependsOn 'spotlessApply'
+  options.errorprone {
+      disableWarningsInGeneratedCode = true
+      ignoreUnknownCheckNames = true
+      allErrorsAsWarnings = true
+      // workaround for: https://github.com/google/error-prone/issues/780
+//      errorproneArgs = ['-Xep:ParameterName:OFF',
+//                        '-Xep:FallThrough:OFF',
+//                        '-Xep:UnusedVariable:OFF',
+//                        '-Xep:UnusedMethod:OFF',
+//                        '-Xep:FunctionalInterfaceClash:OFF',
+//                        '-Xep:AssertionFailureIgnored:OFF',
+//                        '-Xlint:unchecked',
+//                        '-Xlint:deprecation'
+//      ]
+    }  
+} 
+
+compileTestJava {
+  options.encoding = 'UTF-8'
+  options.compilerArgs << '-parameters' << "-Xlint:unchecked" << "-Xlint:deprecation"
+} 
+
+
+test {
+  useJUnitPlatform()
+  testLogging.showStandardStreams = true
+  minHeapSize = "512m"
+  maxHeapSize = "1024m"
+
+// listen to events in the test execution lifecycle
+  beforeTest { descriptor ->
+    logger.lifecycle("Running test: " + descriptor)
+  }
+
+// listen to standard out and standard error of the test JVM(s)
+//    onOutput { descriptor, event ->
+//      logger.lifecycle(descriptor + ": " + event.message)
+//    }
+
+  testLogging {
+    events "passed", "skipped", "failed"
+    exceptionFormat = 'full'
+    exceptionFormat = 'full'
+    showStandardStreams = true
+  }
+  afterSuite { desc, result ->
+    if (!desc.parent) { // will match the outermost suite
+      println "Results: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} successes, ${result.failedTestCount} failures, ${result.skippedTestCount} skipped)"
+    }
+  }
+  
+}
+
 
 def pomContent = {
   name "${project.group}:${project.name}"
@@ -96,7 +143,7 @@ def pomContent = {
   groupId project.group
   artifactId project.name
   version project.version
-  inceptionYear '2020'
+  inceptionYear '2023'
   packaging 'jar'
   licenses {
     license {
@@ -137,12 +184,12 @@ jar {
 }
 
 task javadocJar(type: Jar) {
-  classifier = 'javadoc'
+  archiveClassifier = 'javadoc'
   from javadoc
 }
 
 task sourcesJar(type: Jar) {
-  classifier = 'sources'
+  archiveClassifier = 'sources'
   from sourceSets.main.allSource
 }
 
@@ -155,36 +202,49 @@ signing {
 }
 
 
-test {
-  useJUnitPlatform()
-  testLogging {
-    events /*"passed", */ "skipped", "failed"
-//    events "started", "passed", "skipped", "failed"
-    exceptionFormat = 'full'
-    showStandardStreams = true
-  }
-  afterSuite { desc, result ->
-    if (!desc.parent) { // will match the outermost suite
-      println "Results: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} successes, ${result.failedTestCount} failures, ${result.skippedTestCount} skipped)"
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+
+            artifact sourcesJar
+            artifact javadocJar
+        
+            pom {
+                packaging = "jar"
+                name.set("WALib")
+                url.set("https://github.com/wwalery/walib")
+                description.set("Flexible DTO Java classes generator. Generate classes from database metadata (schema)")
+            
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                scm {
+                    connection.set("scm:https://github.com/wwalery/walib.git")
+                    developerConnection.set("scm:git@github.com:wwalery/walib.git")
+                    url.set("https://github.com/wwalery/walib")
+                }
+                developers {
+                    developer {
+                        id = 'wwalery'
+                        name = 'Valerii Vysotskyi'
+                        email = 'dev@wysotsky.info'
+                    }
+                }
+            }
+
+        }
     }
-  }
-}
-
-uploadArchives {
-  repositories {
-    mavenDeployer {
-      beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-      repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-        authentication(userName: ossrhUsername, password: ossrhPassword)
-      }
-
-      snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-        authentication(userName: ossrhUsername, password: ossrhPassword)
-      }
-
-      pom { project pomContent }
+    repositories {
+        maven {
+            url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+            credentials {
+                username ossrhUsername
+                password ossrhPassword
+            }
+        }
     }
-  }
 }
-

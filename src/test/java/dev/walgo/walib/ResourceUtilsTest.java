@@ -4,10 +4,8 @@ import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-/** @author walery */
 public class ResourceUtilsTest {
 
-  /** Test of findResourceFiles method, of class ResourceUtils. */
   @Test
   public void testFindResourceFiles_zip() {
     System.setProperty("loader.path", ResourceLoaderTest.TEST_JAR);
@@ -25,7 +23,6 @@ public class ResourceUtilsTest {
     Assertions.assertEquals(expResult, result);
   }
 
-  /** Test of getClass method, of class ResourceUtils. */
   @Test
   public void testGetClass() {
     String className = "dev.walgo.walib.PackageMetaInfo";
@@ -34,7 +31,6 @@ public class ResourceUtilsTest {
     Assertions.assertEquals(expResult, result);
   }
 
-  /** Test of classFromResource method, of class ResourceUtils. */
   @Test
   public void testClassFromResource() {
     String resourceName = "dev/walgo/walib/PackageMetaInfo.class";
@@ -45,7 +41,6 @@ public class ResourceUtilsTest {
         result.getName());
   }
 
-  /** Test of findClassesFromResources method, of class ResourceUtils. */
   @Test
   public void testFindClassesFromResources_withPackage() {
     String packageName = "dev.walgo.walib";

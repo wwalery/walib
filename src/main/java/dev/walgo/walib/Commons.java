@@ -3,7 +3,7 @@ package dev.walgo.walib;
 /**
  * Common utilities.
  *
- * @author Walery Wysotsky <dev@wysotsky.info>
+ * @author Walery Wysotsky {@literal <dev@wysotsky.info>}
  */
 public class Commons {
 
@@ -14,10 +14,11 @@ public class Commons {
   /**
    * Return first non-null item from list.
    *
-   * <p>Propose to use default as last value, e.g.: Commons.coalesce(firstValue, secondValue,
+   * <p>
+   * Propose to use default as last value, e.g.: Commons.coalesce(firstValue, secondValue,
    * thirdValue, defaultValue)
    *
-   * @param <T> item type
+   * @param <T>   item type
    * @param items list of items
    * @return first non-null, or null, when all are nulls
    */

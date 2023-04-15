@@ -11,25 +11,27 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Load resource list from various sources.
  *
- * @author Walery Wysotsky <dev@wysotsky.info>
+ * @author Walery Wysotsky {@literal <dev@wysotsky.info>}
  */
 public class ResourceLoader {
 
   private static final Logger LOG = LoggerFactory.getLogger(ResourceLoader.class);
 
-  private ResourceLoader() {}
+  private ResourceLoader() {
+  }
 
   /**
    * Load list of all resources (classes too) from classpath. Also supports Spring classloader.
    *
    * @return Map of classpath entry -> resource list classpath entry could be jar/war file or
-   *     directory
+   *         directory
    */
   public static final Map<String, List<String>> loadFromClasspath() {
 
@@ -38,9 +40,9 @@ public class ResourceLoader {
     // read entries from system classpath
     String classPath = System.getProperty("java.class.path");
 
-    if ((classPath != null) && !classPath.isEmpty()) {
+    if (classPath != null && !classPath.isEmpty()) {
       String pathSeparator = System.getProperty("path.separator");
-      String[] classPathArray = classPath.split(pathSeparator);
+      String[] classPathArray = StringUtils.split(classPath, pathSeparator);
       for (String entry : classPathArray) {
         result.put(entry, null);
       }
@@ -48,8 +50,8 @@ public class ResourceLoader {
 
     // Spring classpath
     classPath = System.getProperty("loader.path");
-    if ((classPath != null) && !classPath.isEmpty()) {
-      String[] classPathArray = classPath.split(",");
+    if (classPath != null && !classPath.isEmpty()) {
+      String[] classPathArray = StringUtils.split(classPath, ",");
       for (String entry : classPathArray) {
         result.put(entry, null);
       }
@@ -76,15 +78,21 @@ public class ResourceLoader {
       return loadZip(path);
     } else {
       return loadDirectory(path);
-      //      } else {
-      //        LOG.error("Protocol [{}] for url [{}] not supported", url.getProtocol(), url);
-      //        return new ArrayList<>();
-      //        throw new IllegalArgumentException(String.format("Protocol [%s] for url [%s] not
+      // } else {
+      // LOG.error("Protocol [{}] for url [{}] not supported", url.getProtocol(), url);
+      // return new ArrayList<>();
+      // throw new IllegalArgumentException(String.format("Protocol [%s] for url [%s] not
       // supported",
-      //                url.getProtocol(), url));
+      // url.getProtocol(), url));
     }
   }
 
+  /**
+   * Gets resource names from directory.
+   * 
+   * @param path path to resources
+   * @return list of resource names
+   */
   public static List<String> loadDirectory(String path) {
     // Get a File object for the package
     File directory = new File(path);
@@ -113,6 +121,12 @@ public class ResourceLoader {
     return content;
   }
 
+  /**
+   * Load resources from JAR.
+   * 
+   * @param path JAR file name
+   * @return List of resource names
+   */
   public static List<String> loadJar(String path) {
     // It does not work with the filesystem: we must
     // be in the case of a package contained in a jar file.
@@ -133,6 +147,12 @@ public class ResourceLoader {
     return result;
   }
 
+  /**
+   * Load resources from ZIP.
+   * 
+   * @param path JAR file name
+   * @return List of resource names
+   */
   public static List<String> loadZip(String path) {
     List<String> result = new ArrayList<>();
     try {
@@ -140,7 +160,7 @@ public class ResourceLoader {
       ZipFile zip = new ZipFile(path);
       Enumeration<? extends ZipEntry> entries = zip.entries();
       while (entries.hasMoreElements()) {
-        //    LOG.trace("Process ZIP entry: {}", entry.getName());
+        // LOG.trace("Process ZIP entry: {}", entry.getName());
         ZipEntry entry = entries.nextElement();
         if (!entry.isDirectory()) {
           result.add(entry.getName());

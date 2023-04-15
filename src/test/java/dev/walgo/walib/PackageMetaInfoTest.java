@@ -6,10 +6,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.io.File;
 import org.junit.jupiter.api.Test;
 
-/** @author Walery Wysotsky <dev@wysotsky.info> */
 public class PackageMetaInfoTest {
 
-  /** Test of getTitle method, of class MetaInfo. */
+  /**
+   * Test read all from jar.
+   */
   @Test
   public void testReadAllFromJar() {
     PackageMetaInfo instance = new PackageMetaInfo("test.jar");

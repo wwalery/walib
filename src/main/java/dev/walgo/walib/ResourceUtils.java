@@ -12,10 +12,13 @@ import org.slf4j.LoggerFactory;
 /**
  * Various resource manipulations (based on REsourceLoader output).
  *
- * @author Walery Wysotsky <dev@wysotsky.info>
+ * @author Walery Wysotsky {@literal <dev@wysotsky.info>}
  */
 public class ResourceUtils {
 
+  /**
+   * Extension for class files.
+   */
   public static final String CLASS_EXT = ".class";
 
   private static final Logger LOG = LoggerFactory.getLogger(ResourceUtils.class);
@@ -44,20 +47,20 @@ public class ResourceUtils {
   }
 
   /**
-   * List resources with names corresponded to regex. E.g: ".*\.class" - all classes
-   * "my\/package\/*\.class" - all classes from given package
+   * List resources with names corresponded to regex.
    *
-   * @param resourceRegex
-   * @return
+   * @param resourceRegex Regex for resource. E.g:<br>
+   *                      ".*?\.class" - all classes,<br>
+   *                      "my\/package\/.*?\.class" - all classes from given package
+   * @return resource names
    */
   public static List<String> findResourceFiles(String resourceRegex) {
-    Pattern pattern =
-        (resourceRegex == null) || resourceRegex.isEmpty() ? null : Pattern.compile(resourceRegex);
+    Pattern pattern = resourceRegex == null || resourceRegex.isEmpty() ? null : Pattern.compile(resourceRegex);
     Map<String, List<String>> localResources = ResourceLoader.loadFromClasspath();
     List<String> files = new ArrayList<>();
     for (List<String> pathResources : localResources.values()) {
       for (String resource : pathResources) {
-        if ((pattern == null) || (pattern.matcher(resource).find())) {
+        if (pattern == null || pattern.matcher(resource).find()) {
           files.add(resource);
         }
       }
@@ -69,11 +72,18 @@ public class ResourceUtils {
     if (!resourceName.endsWith(CLASS_EXT)) {
       return null;
     }
-    String className =
-        resourceName.replace('/', '.').substring(0, resourceName.length() - CLASS_EXT.length());
+    String className = resourceName.replace('/', '.').substring(0, resourceName.length() - CLASS_EXT.length());
     return className;
   }
 
+  /**
+   * Gets class based on given class name.
+   * 
+   * Use cached data
+   * 
+   * @param className class name
+   * @return extracted class
+   */
   public static Class<?> getClass(String className) {
     if (CLASS_WEAK_CACHE.containsKey(className)) {
       return CLASS_WEAK_CACHE.get(className);
@@ -91,7 +101,7 @@ public class ResourceUtils {
   /**
    * Load class from resource name.
    *
-   * @param resourceName
+   * @param resourceName Name of resource
    * @return loaded class
    */
   @SuppressWarnings("rawtypes")
@@ -106,17 +116,17 @@ public class ResourceUtils {
   /**
    * Load all classes from resources.
    *
-   * @param <T> base class type
+   * @param <T>         base class type
    * @param basePackage base package for classes - optional
-   * @param baseClass - base class (interface) - only descendant classes will be returned.
+   * @param baseClass   - base class (interface) - only descendant classes will be returned.
    * @return list of found and loaded classes
    */
-  @SuppressWarnings({"rawtypes", "unchecked"})
+  @SuppressWarnings({ "rawtypes", "unchecked" })
   public static <T> List<Class<? extends T>> findClassesFromResources(
       String basePackage, Class<T> baseClass) {
     List<Class<? extends T>> result = new ArrayList<>();
     String regex = "";
-    if ((basePackage != null) && !basePackage.isEmpty()) {
+    if (basePackage != null && !basePackage.isEmpty()) {
       regex = basePackage.replace(".", REGEX_PATH_DELIMITER) + REGEX_PATH_DELIMITER;
     }
     List<String> resources = findResourceFiles(regex + ".+?\\" + CLASS_EXT);
@@ -129,7 +139,7 @@ public class ResourceUtils {
           && baseClass.isAssignableFrom(clazz)
           && !clazz.isInterface()
           && !Modifier.isAbstract(clazz.getModifiers())
-          && ((clazz.getModifiers() & MODIFIER_MODULE) == 0) // module
+          && (clazz.getModifiers() & MODIFIER_MODULE) == 0 // module
       ) {
         LOG.trace("Found class [{}] as instance of {}", clazz.getName(), baseClass.getName());
         Class<? extends T> clazzI = clazz.asSubclass(baseClass);
