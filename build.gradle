@@ -60,8 +60,6 @@ dependencies {
   compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
 
   implementation "org.slf4j:slf4j-api:${slf4jVersion}"
-  runtimeOnly "ch.qos.logback:logback-classic:${logbackVersion}"
-  runtimeOnly "ch.qos.logback:logback-core:${logbackVersion}"
   implementation "org.apache.commons:commons-lang3:${commonsLangVersion}"
 //  implementation "org.apache.commons:commons-collections4:${commonsCollectionsVersion}"
   
@@ -74,6 +72,8 @@ dependencies {
   testImplementation "org.hsqldb:hsqldb:${hsqldbVersion}"
 // https://mvnrepository.com/artifact/org.hsqldb/sqltool
   testImplementation "org.hsqldb:sqltool:${hsqldbVersion}"
+  testImplementation "ch.qos.logback:logback-classic:${logbackVersion}"
+  testImplementation "ch.qos.logback:logback-core:${logbackVersion}"
 
 }
 
@@ -198,7 +198,7 @@ artifacts {
 }
 
 signing {
-  sign configurations.archives
+  sign publishing.publications
 }
 
 
