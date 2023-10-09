@@ -11,17 +11,17 @@ import org.immutables.value.Value;
 public abstract class ParameterInfo extends AbstractFieldInfo {
 //CHECKSTYLE:ON
 
-  /**
-   * Kind of column/parameter.
-   * 
-   * @return kind of column/parameter
-   */
-  public abstract ColumnType columnType();
+    /**
+     * Kind of column/parameter.
+     * 
+     * @return kind of column/parameter
+     */
+    public abstract ColumnType columnType();
 
-  /**
-   * Parameter info builder.
-   */
-  public static class Builder extends ParameterInfoBuilder {
-  }
+    /**
+     * Parameter info builder.
+     */
+    public static class Builder extends ParameterInfoBuilder {
+    }
 
 }

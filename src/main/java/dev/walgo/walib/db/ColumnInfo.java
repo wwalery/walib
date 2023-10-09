@@ -11,17 +11,17 @@ import org.immutables.value.Value;
 public abstract class ColumnInfo extends AbstractFieldInfo {
 //CHECKSTYLE:ON
 
-  /**
-   * Is column primary key?
-   * 
-   * @return TRUE/FALSE
-   */
-  public abstract boolean isPrimaryKey();
+    /**
+     * Is column primary key?
+     * 
+     * @return TRUE/FALSE
+     */
+    public abstract boolean isPrimaryKey();
 
-  /**
-   * Column info builder.
-   */
-  public static class Builder extends ColumnInfoBuilder {
-  }
+    /**
+     * Column info builder.
+     */
+    public static class Builder extends ColumnInfoBuilder {
+    }
 
 }

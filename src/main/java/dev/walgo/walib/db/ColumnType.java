@@ -7,70 +7,70 @@ import java.sql.DatabaseMetaData;
  */
 public enum ColumnType {
 
-  /**
-   * Unknown column.
-   */
-  UNKNOWN,
+    /**
+     * Unknown column.
+     */
+    UNKNOWN,
 
-  /**
-   * Input column.
-   */
-  IN,
+    /**
+     * Input column.
+     */
+    IN,
 
-  /**
-   * Input/Output column.
-   */
-  IN_OUT,
+    /**
+     * Input/Output column.
+     */
+    IN_OUT,
 
-  /**
-   * Output column.
-   */
-  OUT,
+    /**
+     * Output column.
+     */
+    OUT,
 
-  /**
-   * Return column.
-   */
-  RETURN,
+    /**
+     * Return column.
+     */
+    RETURN,
 
-  /**
-   * Function/Procedure result.
-   */
-  RESULT;
+    /**
+     * Function/Procedure result.
+     */
+    RESULT;
 
-  static ColumnType fromFunction(short functionColumnType) {
-    switch (functionColumnType) {
-      case DatabaseMetaData.functionColumnUnknown:
-        return UNKNOWN;
-      case DatabaseMetaData.functionColumnIn:
-        return IN;
-      case DatabaseMetaData.functionColumnInOut:
-        return IN_OUT;
-      case DatabaseMetaData.functionColumnOut:
-        return OUT;
-      case DatabaseMetaData.functionColumnResult:
-        return RESULT;
-      default:
-        return UNKNOWN;
+    static ColumnType fromFunction(short functionColumnType) {
+        switch (functionColumnType) {
+            case DatabaseMetaData.functionColumnUnknown:
+                return UNKNOWN;
+            case DatabaseMetaData.functionColumnIn:
+                return IN;
+            case DatabaseMetaData.functionColumnInOut:
+                return IN_OUT;
+            case DatabaseMetaData.functionColumnOut:
+                return OUT;
+            case DatabaseMetaData.functionColumnResult:
+                return RESULT;
+            default:
+                return UNKNOWN;
+        }
     }
-  }
 
-  static ColumnType fromProcedure(short procedureColumnType) {
-    switch (procedureColumnType) {
-      case DatabaseMetaData.procedureColumnUnknown:
-        return UNKNOWN;
-      case DatabaseMetaData.procedureColumnIn:
-        return IN;
-      case DatabaseMetaData.procedureColumnInOut:
-        return IN_OUT;
-      case DatabaseMetaData.procedureColumnOut:
-        return OUT;
-      case DatabaseMetaData.procedureColumnReturn:
-        return RETURN;
-      case DatabaseMetaData.procedureColumnResult:
-        return RESULT;
-      default:
-        return UNKNOWN;
+    static ColumnType fromProcedure(short procedureColumnType) {
+        switch (procedureColumnType) {
+            case DatabaseMetaData.procedureColumnUnknown:
+                return UNKNOWN;
+            case DatabaseMetaData.procedureColumnIn:
+                return IN;
+            case DatabaseMetaData.procedureColumnInOut:
+                return IN_OUT;
+            case DatabaseMetaData.procedureColumnOut:
+                return OUT;
+            case DatabaseMetaData.procedureColumnReturn:
+                return RETURN;
+            case DatabaseMetaData.procedureColumnResult:
+                return RESULT;
+            default:
+                return UNKNOWN;
+        }
     }
-  }
 
 }

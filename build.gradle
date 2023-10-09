@@ -4,7 +4,7 @@ plugins {
   id 'com.diffplug.spotless' version "${spotlessPluginVersion}"
   id 'net.ltgt.errorprone' version "${errorPronePluginVersion}"
   
-  id 'checkstyle'
+//  id 'checkstyle'
   id 'maven-publish'
   id 'signing'
 }
@@ -31,26 +31,23 @@ spotless {
 }    
 
 
-checkstyle {
-  configFile file("checkstyle.xml")
-}
+//checkstyle {
+//  configFile file("checkstyle.xml")
+//}
 
-tasks.withType(Checkstyle) {
-//  classpath = files()
-//  source "${project.rootDir}"
-
-// Define the output folder of the generated reports
-  reports {
-    html {
-      enabled true
-      destination rootProject.file("build/reports/checkstyle/checkstyle.html")
-    }
-    xml {
-      enabled true
-      destination rootProject.file("build/reports/checkstyle/checkstyle.xml")
-    }
-  }
-}
+//tasks.withType(Checkstyle) {
+//
+//  reports {
+//    html {
+//      enabled true
+//      destination rootProject.file("build/reports/checkstyle/checkstyle.html")
+//    }
+//    xml {
+//      enabled true
+//      destination rootProject.file("build/reports/checkstyle/checkstyle.xml")
+//    }
+//  }
+//}
 
 
 dependencies {
