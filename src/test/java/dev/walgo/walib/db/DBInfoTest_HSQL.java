@@ -21,13 +21,14 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-public class DBInfoTest {
+public class DBInfoTest_HSQL {
 
     private static final String PUBLIC = "PUBLIC";
 
     private static final String DB_USER = "sa";
     private static final String DB_URL = "jdbc:hsqldb:mem:testdb";
     private static final String TABLE_1 = "TEST_TABLE_1";
+    private static final String DB_SQL = "src/test/resources/db/create_db_hsql.sql";
 
     private static Connection conn;
 
@@ -41,7 +42,7 @@ public class DBInfoTest {
     @BeforeAll
     public static void before() throws SQLException, IOException, SqlToolError {
         conn = DriverManager.getConnection(DB_URL, DB_USER, "");
-        try (InputStream inputStream = new FileInputStream("src/test/resources/db/create_db.sql")) {
+        try (InputStream inputStream = new FileInputStream(DB_SQL)) {
             SqlFile sqlFile = new SqlFile(
                     new InputStreamReader(inputStream, StandardCharsets.UTF_8),
                     "init",
@@ -72,6 +73,7 @@ public class DBInfoTest {
     @Test
     public void testGetTables() throws SQLException {
         DBInfo info = new DBInfo(conn, null, null /* "PUBLIC" */, "TEST_TABLE%");
+
         List<TableInfo> tables = info.getTables();
         assertThat(tables)
                 .isNotNull()

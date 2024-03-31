@@ -8,11 +8,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Database metadata
  */
 public class DBInfo {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DBInfo.class);
 
     private final Connection conn;
     private final String catalog;
@@ -45,8 +49,7 @@ public class DBInfo {
      * @throws SQLException table info extraction error
      */
     public Map<String, TableInfo> getTablesAsMap() throws SQLException {
-        return getTables().stream()
-                .collect(Collectors.toMap(it -> it.name.toLowerCase(), it -> it));
+        return getTables().stream().collect(Collectors.toMap(it -> it.name.toLowerCase(), it -> it));
     }
 
     /**
@@ -69,6 +72,10 @@ public class DBInfo {
                     table.schema = rs.getString("TABLE_SCHEM"); // table schema (may be null)
                     table.name = rs.getString("TABLE_NAME"); // table name
                     table.type = rs.getString("TABLE_TYPE"); // SQL type from java.sql.Types
+                    if ("INDEX".equals(table.type)) {
+// PostgreSQL workaround - it returns indexes also                      
+                        continue;
+                    }
                     table.remarks = rs.getString(AbstractFieldInfo.COLUMN_REMARKS); // comment describing column (may be
                                                                                     // null)
 //   table.idName = rs.getString("SELF_REFERENCING_COL_NAME"); // default value (may be null)

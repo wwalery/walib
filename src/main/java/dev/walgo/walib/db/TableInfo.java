@@ -160,9 +160,14 @@ public class TableInfo {
                     String fieldName = rs.getString(AbstractFieldInfo.COLUMN_COLUMN_NAME);
                     field.name(fieldName); // column name
                     field.type(rs.getInt(AbstractFieldInfo.COLUMN_DATA_TYPE)); // SQL type from java.sql.Types
-                    field.typeName(rs.getString(AbstractFieldInfo.COLUMN_TYPE_NAME)); // Data source dependent type
-                                                                                      // name, for a
-                                                                                      // UDT the type name
+// Data source dependent type name, for a UDT the type name                    
+                    String typeName = rs.getString(AbstractFieldInfo.COLUMN_TYPE_NAME);
+// Workaround for PostgreSQL
+//TODO Can be replaced with specific database class with custom behavior
+                    if (typeName.startsWith("_")) {
+                        typeName = typeName.substring(1);
+                    }
+                    field.typeName(typeName);
                     // is fully qualified
                     field.size(rs.getInt("COLUMN_SIZE")); // column size. For char or date types this is the maximum
                                                           // number

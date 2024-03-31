@@ -51,15 +51,14 @@ spotless {
 
 
 dependencies {
-  annotationProcessor 'org.immutables:value:2.9.3'
-  compileOnly 'org.immutables:value:2.9.3'
-  testCompileOnly 'org.immutables:value:2.9.3'
+  annotationProcessor "org.immutables:value:${immutablesVersion}"
+  compileOnly "org.immutables:value:${immutablesVersion}"
+  testCompileOnly "org.immutables:value:${immutablesVersion}"
   compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
 
   implementation "org.slf4j:slf4j-api:${slf4jVersion}"
   implementation "org.apache.commons:commons-lang3:${commonsLangVersion}"
 //  implementation "org.apache.commons:commons-collections4:${commonsCollectionsVersion}"
-  
 
   errorprone "com.google.errorprone:error_prone_core:${errorProneVersion}"
 
@@ -71,6 +70,9 @@ dependencies {
   testImplementation "org.hsqldb:sqltool:${hsqldbVersion}"
   testImplementation "ch.qos.logback:logback-classic:${logbackVersion}"
   testImplementation "ch.qos.logback:logback-core:${logbackVersion}"
+
+  testImplementation "org.testcontainers:postgresql:${testcontainersPostgresVersion}"
+  testImplementation "org.postgresql:postgresql:42.7.3"
 
 }
 

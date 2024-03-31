@@ -1,6 +1,5 @@
 package dev.walgo.walib.db;
 
-import java.sql.Types;
 import javax.annotation.Nullable;
 
 /**
@@ -130,14 +129,7 @@ public abstract class AbstractFieldInfo {
      * @return TRUE if it's string field
      */
     public boolean isString() {
-        return type() == Types.CHAR
-                || type() == Types.CLOB
-                || type() == Types.LONGNVARCHAR
-                || type() == Types.LONGVARCHAR
-                || type() == Types.NCHAR
-                || type() == Types.NCLOB
-                || type() == Types.NVARCHAR
-                || type() == Types.VARCHAR;
+        return DBUtils.isStringField(type());
     }
 
     /**
@@ -146,15 +138,7 @@ public abstract class AbstractFieldInfo {
      * @return TRUE if it's numeric field
      */
     public boolean isNumeric() {
-        return type() == Types.BIGINT
-                || type() == Types.DECIMAL
-                || type() == Types.DOUBLE
-                || type() == Types.FLOAT
-                || type() == Types.INTEGER
-                || type() == Types.NUMERIC
-                || type() == Types.REAL
-                || type() == Types.SMALLINT
-                || type() == Types.TINYINT;
+        return DBUtils.isNumericField(type());
     }
 
 }
