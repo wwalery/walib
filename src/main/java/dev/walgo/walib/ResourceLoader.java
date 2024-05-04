@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -208,7 +209,7 @@ public class ResourceLoader {
                 LOG.debug("Resource [{}] not found in classloader", path);
                 return result;
             }
-            try (InputStreamReader reader = new InputStreamReader(in)) {
+            try (InputStreamReader reader = new InputStreamReader(in, Charset.defaultCharset())) {
                 try (BufferedReader br = new BufferedReader(reader)) {
                     String resource;
                     while ((resource = br.readLine()) != null) {

@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
@@ -49,7 +50,8 @@ public class DBInfo {
      * @throws SQLException table info extraction error
      */
     public Map<String, TableInfo> getTablesAsMap() throws SQLException {
-        return getTables().stream().collect(Collectors.toMap(it -> it.name.toLowerCase(), it -> it));
+        return getTables().stream()
+                .collect(Collectors.toMap(it -> it.name.toLowerCase(Locale.ROOT), it -> it));
     }
 
     /**
@@ -141,6 +143,19 @@ public class DBInfo {
             }
         }
         return procedures;
+    }
+
+    public DBType getDBType() {
+        try {
+            String url = conn.getMetaData().getURL();
+            if (url.startsWith("jdbc:postgresql:") || url.startsWith("jdbc:p6spy:postgresql:")) {
+                return DBType.POSTGRESQL;
+            }
+            return null;
+        } catch (SQLException ex) {
+            LOG.error("", ex);
+            return null;
+        }
     }
 
 }

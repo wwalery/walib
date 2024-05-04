@@ -55,7 +55,8 @@ dependencies {
   compileOnly "org.immutables:value:${immutablesVersion}"
   testCompileOnly "org.immutables:value:${immutablesVersion}"
   compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
-
+  implementation "org.immutables:value-annotations:${immutablesVersion}"
+  
   implementation "org.slf4j:slf4j-api:${slf4jVersion}"
   implementation "org.apache.commons:commons-lang3:${commonsLangVersion}"
 //  implementation "org.apache.commons:commons-collections4:${commonsCollectionsVersion}"

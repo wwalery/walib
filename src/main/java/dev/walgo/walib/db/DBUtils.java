@@ -4,7 +4,7 @@ import java.sql.Types;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * Various custom DM methods
+ * Various custom DB methods
  */
 public class DBUtils {
 

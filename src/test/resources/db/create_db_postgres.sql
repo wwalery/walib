@@ -1,7 +1,7 @@
 CREATE TABLE test_table_1 (
   id INTEGER NOT NULL,
   enum_field VARCHAR(50),
-  big_field VARCHAR(1000),
+  big_field VARCHAR(1000) DEFAULT 'test',
   read_only INTEGER,
   is_deleted SMALLINT,
   double_field DOUBLE PRECISION,
@@ -12,7 +12,7 @@ CREATE TABLE test_table_1 (
   decimal_field_1 DECIMAL(5),
   decimal_field_2 DECIMAL(10,2),
   numeric_field NUMERIC,
-  boolean_field BOOLEAN,
+  boolean_field BOOLEAN DEFAULT FALSE,
   smallint_field SMALLINT,
   bigint_field BIGINT,
   real_field REAL,
@@ -39,6 +39,6 @@ CREATE TABLE test_table_3 (
   enum_field_2 VARCHAR(50),
   big_field_2 VARCHAR(1000),
   read_only INTEGER,
-  is_deleted SMALLINT,
+  is_deleted SMALLINT DEFAULT 0,
   PRIMARY KEY (id)
 );

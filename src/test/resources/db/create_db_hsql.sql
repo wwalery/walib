@@ -12,7 +12,7 @@ CREATE TABLE test_table_1 (
   decimal_field_1 DECIMAL(5),
   decimal_field_2 DECIMAL(10,2),
   numeric_field NUMERIC,
-  boolean_field BOOLEAN,
+  boolean_field BOOLEAN DEFAULT FALSE,
   smallint_field SMALLINT,
   bigint_field BIGINT,
   real_field REAL,
