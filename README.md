@@ -10,6 +10,10 @@ Read meta information (MANIFEST.MF) from package, which contains given class.
 
 Common utilities.
 
+## TriOptional
+
+Three state Optional - replace standard Optional with null value
+
 ## ResourceLoader
 
 Resource extraction from JAR/ZIP/directory
