@@ -150,8 +150,11 @@ public class DBInfo {
             String url = conn.getMetaData().getURL();
             if (url.startsWith("jdbc:postgresql:") || url.startsWith("jdbc:p6spy:postgresql:")) {
                 return DBType.POSTGRESQL;
+            } else if (url.startsWith("jdbc:mysql:")) {
+                return DBType.MYSQL;
+            } else {
+                return null;
             }
-            return null;
         } catch (SQLException ex) {
             LOG.error("", ex);
             return null;

@@ -1,5 +1,9 @@
-# WALib - common library Copyright (c) 2020-2021, 2023
+# WALib - common library Copyright (c) 2020-2021, 2023-2025
 Author: Walery Wysotsky <dev@wysotsky.info>
+
+## [0.10.0] - 2025-06-14
+### Added
+- DB type: MYSQL
 
 ## [0.6.0] - 2023-10-09
 ### Added

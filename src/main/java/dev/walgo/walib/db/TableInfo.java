@@ -24,10 +24,6 @@ public class TableInfo {
                  // TEMPORARY", "ALIAS",
     // "SYNONYM".
     String remarks;
-    String idName; // name of the designated "identifier" column of a typed table (may be null)
-    String idGenType; // specifies how values in SELF_REFERENCING_COL_NAME are created. Values are
-                      // "SYSTEM", "USER",
-    // "DERIVED". (may be null)
     List<String> keys;
     Map<String, ColumnInfo> fields;
 
@@ -106,24 +102,6 @@ public class TableInfo {
      */
     public String getRemarks() {
         return remarks;
-    }
-
-    /**
-     * Gets table id name
-     *
-     * @return the id name
-     */
-    public String getIdName() {
-        return idName;
-    }
-
-    /**
-     * Gets table id generator type
-     *
-     * @return the id generator type
-     */
-    public String getIdGenType() {
-        return idGenType;
     }
 
     /**
@@ -240,10 +218,6 @@ public class TableInfo {
                 + type
                 + ", remarks="
                 + remarks
-                + ", idName="
-                + idName
-                + ", idGenType="
-                + idGenType
                 + ", keys="
                 + keys
                 + ", fields="
