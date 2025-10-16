@@ -68,7 +68,7 @@ public class DBInfoTest_Postgres {
         TableInfo table1 = tables.get(0);
         assertThat(table1.getName()).isEqualToIgnoringCase(TABLE_1);
         assertThat(table1.getType()).isEqualToIgnoringCase("TABLE");
-        assertThat(table1.getCatalog()).isNull();
+        assertThat(table1.getCatalog()).isEqualTo(DB_NAME);
         assertThat(table1.getSchema()).isEqualToIgnoringCase(PUBLIC);
         List<String> keys = table1.getKeys();
         assertThat(keys)

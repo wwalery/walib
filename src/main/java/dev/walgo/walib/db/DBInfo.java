@@ -104,6 +104,7 @@ public class DBInfo {
                 functions = new ArrayList<>();
                 while (rs.next()) {
                     CallableInfo func = new CallableInfo(conn);
+                    func.function = true;
                     func.catalog = rs.getString("FUNCTION_CAT"); // function catalog (may be null)
                     func.schema = rs.getString("FUNCTION_SCHEM"); // function schema (may be null)
                     func.name = rs.getString("FUNCTION_NAME"); // function name
@@ -124,7 +125,7 @@ public class DBInfo {
      * @throws SQLException throw when error
      */
     public List<CallableInfo> getProcedures() throws SQLException {
-        if (procedures != null) {
+        if (procedures == null) {
             DatabaseMetaData meta = conn.getMetaData();
             String locSchema = DBUtils.maskPattern(schema);
             String locName = DBUtils.maskPattern(namePattern);

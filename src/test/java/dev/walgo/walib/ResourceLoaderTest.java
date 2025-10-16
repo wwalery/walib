@@ -5,9 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Map;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class ResourceLoaderTest {
@@ -27,7 +27,7 @@ public class ResourceLoaderTest {
     }
 
     @Test
-    public void testLoadFromUrl_Jar() throws MalformedURLException {
+    public void testLoadFromUrl_Jar() {
         String testFile = TEST_JAR;
         List<String> expResult = List.of("META-INF/MANIFEST.MF", "dev/walgo/walib/MetaInfo.class");
         Map<String, List<String>> result = ResourceLoader.load(testFile);
@@ -36,7 +36,7 @@ public class ResourceLoaderTest {
     }
 
     @Test
-    public void testLoadFromUrl_Zip() throws MalformedURLException {
+    public void testLoadFromUrl_Zip() {
         String testFile = TEST_ZIP;
         List<String> expResult = List.of("build.xml");
         Map<String, List<String>> result = ResourceLoader.load(testFile);
@@ -45,16 +45,16 @@ public class ResourceLoaderTest {
     }
 
     @Test
-    public void testLoadFromUrl_Dir() throws MalformedURLException {
+    public void testLoadFromUrl_Dir() {
         String testDir = TEST_DIR;
         List<String> expResult = List.of("build.sh", "sub.dir/README.md");
         Map<String, List<String>> result = ResourceLoader.load(testDir);
-        assertTrue(result.containsKey(testDir));
-        assertEquals(expResult, result.get(testDir));
+        Assertions.assertThat(result).containsKey(testDir);
+        Assertions.assertThat(result.get(testDir)).containsAll(expResult);
     }
 
     @Test
-    public void testListFromClassloader_test() throws MalformedURLException {
+    public void testListFromClassloader_test() {
         List<String> expResult = List.of("dev/walgo/walib/CommonsTest.class", "dev/walgo/walib/db",
                 "dev/walgo/walib/PackageMetaInfoTest.class", "dev/walgo/walib/ResourceLoaderTest.class",
                 "dev/walgo/walib/ResourceUtilsTest.class");

@@ -25,29 +25,21 @@ public enum CallableType {
     TABLE;
 
     static CallableType fromProcedure(short procedureReturnType) {
-        switch (procedureReturnType) {
-            case DatabaseMetaData.procedureResultUnknown:
-                return UNKNOWN;
-            case DatabaseMetaData.procedureNoResult:
-                return VOID;
-            case DatabaseMetaData.procedureReturnsResult:
-                return VALUE;
-            default:
-                return UNKNOWN;
-        }
+        return switch (procedureReturnType) {
+            case DatabaseMetaData.procedureResultUnknown -> UNKNOWN;
+            case DatabaseMetaData.procedureNoResult -> VOID;
+            case DatabaseMetaData.procedureReturnsResult -> VALUE;
+            default -> UNKNOWN;
+        };
     }
 
     static CallableType fromFunction(short functionReturnType) {
-        switch (functionReturnType) {
-            case DatabaseMetaData.functionResultUnknown:
-                return UNKNOWN;
-            case DatabaseMetaData.functionNoTable:
-                return VALUE;
-            case DatabaseMetaData.functionReturnsTable:
-                return TABLE;
-            default:
-                return UNKNOWN;
-        }
+        return switch (functionReturnType) {
+            case DatabaseMetaData.functionResultUnknown -> UNKNOWN;
+            case DatabaseMetaData.functionNoTable -> VALUE;
+            case DatabaseMetaData.functionReturnsTable -> TABLE;
+            default -> UNKNOWN;
+        };
     }
 
 }

@@ -1,7 +1,7 @@
 package dev.walgo.walib.db;
 
 import java.sql.Types;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 
 /**
  * Various custom DB methods
@@ -13,7 +13,7 @@ public class DBUtils {
     }
 
     static String maskPattern(String pattern) {
-        return pattern != null ? StringUtils.replace(pattern, "_", "\\_") : null;
+        return pattern != null ? Strings.CS.replace(pattern, "_", "\\_") : null;
     }
 
     /**

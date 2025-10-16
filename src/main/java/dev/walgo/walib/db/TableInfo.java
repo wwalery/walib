@@ -116,9 +116,10 @@ public class TableInfo {
             DatabaseMetaData meta = conn.getMetaData();
             String locSchema = schema == null ? null : schema; // StrTool.replaceString(schema,"_", "\\_");
             String locTable = name; // StrTool.replaceString(name,"_", "\\_");
-            ResultSet rs = meta.getPrimaryKeys(catalog, locSchema, locTable);
-            while (rs.next()) {
-                keys.add(rs.getString("COLUMN_NAME"));
+            try (ResultSet rs = meta.getPrimaryKeys(catalog, locSchema, locTable)) {
+                while (rs.next()) {
+                    keys.add(rs.getString("COLUMN_NAME"));
+                }
             }
         }
         return keys;
@@ -190,7 +191,6 @@ public class TableInfo {
      * Gets table metadata based on table result set columns
      * 
      * @return table result set meta data
-     * @throws SQLException
      */
     public ResultSetMetaData getMetaData() throws SQLException {
         if (metaData != null) {

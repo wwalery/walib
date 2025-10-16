@@ -12,9 +12,11 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import org.apache.commons.lang3.StringUtils;
@@ -30,6 +32,10 @@ public class ResourceLoader {
 
     private static final Logger LOG = LoggerFactory.getLogger(ResourceLoader.class);
 
+    private static volatile Map<String, List<String>> CLASSPATH_RESOURCES;
+    private static String CLASS_PATH;
+    private static String LOADER_PATH;
+
     private ResourceLoader() {
     }
 
@@ -40,31 +46,46 @@ public class ResourceLoader {
      */
     public static final Map<String, List<String>> loadFromClasspath() {
 
-        Map<String, List<String>> result = new HashMap<>();
+        String classPath = System.getProperty("java.class.path");
+        String loaderPath = System.getProperty("loader.path");
+
+        if (CLASSPATH_RESOURCES != null) {
+            synchronized (ResourceLoader.class) {
+                if (Objects.equals(CLASS_PATH, classPath) && Objects.equals(LOADER_PATH, loaderPath)) {
+                    if (CLASSPATH_RESOURCES != null) {
+                        return CLASSPATH_RESOURCES;
+                    }
+                } else {
+                    CLASSPATH_RESOURCES = null;
+                }
+            }
+        }
+
+        CLASSPATH_RESOURCES = new HashMap<>();
+        CLASS_PATH = classPath;
+        LOADER_PATH = loaderPath;
 
         // read entries from system classpath
-        String classPath = System.getProperty("java.class.path");
 
         if (classPath != null && !classPath.isEmpty()) {
             String pathSeparator = System.getProperty("path.separator");
             String[] classPathArray = StringUtils.split(classPath, pathSeparator);
             for (String entry : classPathArray) {
                 Map<String, List<String>> resources = load(entry);
-                result.putAll(resources);
+                CLASSPATH_RESOURCES.putAll(resources);
             }
         }
 
         // Spring classpath
-        classPath = System.getProperty("loader.path");
-        if (classPath != null && !classPath.isEmpty()) {
-            String[] classPathArray = StringUtils.split(classPath, ",");
+        if (loaderPath != null && !loaderPath.isEmpty()) {
+            String[] classPathArray = StringUtils.split(loaderPath, ",");
             for (String entry : classPathArray) {
                 Map<String, List<String>> resources = load(entry);
-                result.putAll(resources);
+                CLASSPATH_RESOURCES.putAll(resources);
             }
         }
 
-        return result;
+        return CLASSPATH_RESOURCES;
     }
 
     /**
@@ -99,12 +120,15 @@ public class ResourceLoader {
         // Get a File object for the package
         File directory = new File(path);
         LOG.debug("Process directory: [{}]", path);
-        // System.out.println ("\tlooking in " + directory);
-        if (!directory.exists()) {
+        List<String> result;
+        if (directory.exists()) {
+            result = loadDirectory(directory, new ArrayList<>(), "");
+        } else {
             LOG.warn("Path [{}] not found or it's not directory", path);
-            return new ArrayList<>();
+            result = new ArrayList<>();
         }
-        return loadDirectory(directory, new ArrayList<>(), "");
+        LOG.debug("Directory [{}] processed, [{}] items", path, result.size());
+        return result;
     }
 
     private static List<String> loadDirectory(File directory, List<String> content, String baseDir) {
@@ -136,8 +160,7 @@ public class ResourceLoader {
         Map<String, List<String>> result = new HashMap<>();
         List<String> items = new ArrayList<>();
         result.put(path, items);
-        try {
-            JarFile jarFile = new JarFile(path);
+        try (JarFile jarFile = new JarFile(path)) {
             Enumeration<JarEntry> e = jarFile.entries();
             while (e.hasMoreElements()) {
                 JarEntry entry = e.nextElement();
@@ -166,6 +189,12 @@ public class ResourceLoader {
         } catch (IOException ex) {
             LOG.error("Error on load content from JAR: [{}]", path, ex);
         }
+        if (LOG.isDebugEnabled()) {
+            Map<String, Integer> resultInfo = result.entrySet()
+                    .stream()
+                    .collect(Collectors.toMap(it -> it.getKey(), it -> it.getValue().size()));
+            LOG.debug("JAR [{}] processed, items: [{}]", path, resultInfo);
+        }
         return result;
     }
 
@@ -178,9 +207,7 @@ public class ResourceLoader {
     public static List<String> loadZip(String path) {
         LOG.debug("Process ZIP: [{}]", path);
         List<String> result = new ArrayList<>();
-        try {
-
-            ZipFile zip = new ZipFile(path);
+        try (ZipFile zip = new ZipFile(path)) {
             Enumeration<? extends ZipEntry> entries = zip.entries();
             while (entries.hasMoreElements()) {
                 // LOG.trace("Process ZIP entry: {}", entry.getName());
@@ -192,12 +219,13 @@ public class ResourceLoader {
         } catch (IOException ex) {
             LOG.error("Error on load content from ZIP: [{}]", path, ex);
         }
+        LOG.debug("ZIP [{}] processed, items: [{}]", path, result.size());
         return result;
     }
 
     /**
      * List resources from given class loader.
-     * 
+     *
      * @param classLoader class loader
      * @param path        search path
      * @return list of resources
@@ -225,7 +253,7 @@ public class ResourceLoader {
 
     /**
      * List resources from current class loader.
-     * 
+     *
      * @param path search path
      * @return list of resources
      */

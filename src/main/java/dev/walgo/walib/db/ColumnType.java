@@ -38,39 +38,26 @@ public enum ColumnType {
     RESULT;
 
     static ColumnType fromFunction(short functionColumnType) {
-        switch (functionColumnType) {
-            case DatabaseMetaData.functionColumnUnknown:
-                return UNKNOWN;
-            case DatabaseMetaData.functionColumnIn:
-                return IN;
-            case DatabaseMetaData.functionColumnInOut:
-                return IN_OUT;
-            case DatabaseMetaData.functionColumnOut:
-                return OUT;
-            case DatabaseMetaData.functionColumnResult:
-                return RESULT;
-            default:
-                return UNKNOWN;
-        }
+        return switch (functionColumnType) {
+            case DatabaseMetaData.functionColumnUnknown -> UNKNOWN;
+            case DatabaseMetaData.functionColumnIn -> IN;
+            case DatabaseMetaData.functionColumnInOut -> IN_OUT;
+            case DatabaseMetaData.functionColumnOut -> OUT;
+            case DatabaseMetaData.functionColumnResult -> RESULT;
+            default -> UNKNOWN;
+        };
     }
 
     static ColumnType fromProcedure(short procedureColumnType) {
-        switch (procedureColumnType) {
-            case DatabaseMetaData.procedureColumnUnknown:
-                return UNKNOWN;
-            case DatabaseMetaData.procedureColumnIn:
-                return IN;
-            case DatabaseMetaData.procedureColumnInOut:
-                return IN_OUT;
-            case DatabaseMetaData.procedureColumnOut:
-                return OUT;
-            case DatabaseMetaData.procedureColumnReturn:
-                return RETURN;
-            case DatabaseMetaData.procedureColumnResult:
-                return RESULT;
-            default:
-                return UNKNOWN;
-        }
+        return switch (procedureColumnType) {
+            case DatabaseMetaData.procedureColumnUnknown -> UNKNOWN;
+            case DatabaseMetaData.procedureColumnIn -> IN;
+            case DatabaseMetaData.procedureColumnInOut -> IN_OUT;
+            case DatabaseMetaData.procedureColumnOut -> OUT;
+            case DatabaseMetaData.procedureColumnReturn -> RETURN;
+            case DatabaseMetaData.procedureColumnResult -> RESULT;
+            default -> UNKNOWN;
+        };
     }
 
 }

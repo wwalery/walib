@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,21 +95,27 @@ public class CallableInfo {
      * @throws SQLException when method got error
      */
     public List<ParameterInfo> getColumns(String namePattern) throws SQLException {
-        if (columns != null) {
-            return columns;
-        } else if (function) {
-            return getFunctionColumns(namePattern);
-        } else {
-            return getProcedureColumns(namePattern);
+        List<ParameterInfo> result = columns;
+        if (result == null) {
+            if (function) {
+                result = getFunctionColumns(namePattern);
+            } else {
+                result = getProcedureColumns(namePattern);
+            }
+            if (StringUtils.isEmpty(namePattern)) {
+                columns = result;
+            }
         }
+        return result;
     }
 
     private List<ParameterInfo> getProcedureColumns(String namePattern) throws SQLException {
         DatabaseMetaData meta = conn.getMetaData();
         String locSchema = DBUtils.maskPattern(schema);
         String locName = DBUtils.maskPattern(namePattern);
+        List<ParameterInfo> result = null;
         try (ResultSet rs = meta.getProcedureColumns(catalog, locSchema, locName, null)) {
-            columns = new ArrayList<>();
+            result = new ArrayList<>();
             while (rs.next()) {
                 ParameterInfo.Builder column = new ParameterInfo.Builder();
                 column.catalog(rs.getString("PROCEDURE_CAT")); // table catalog (may be null)
@@ -144,18 +151,19 @@ public class CallableInfo {
 //   for the input and output parameters for a procedure. A value of 0 is returned if this row describes the procedure's return value.
 // For result set columns, it is the ordinal position of the column in the result set starting from 1.
 // If there are multiple result sets, the column ordinal positions are implementation defined.
-                columns.add(column.build());
+                result.add(column.build());
             }
         }
-        return columns;
+        return result;
     }
 
     private List<ParameterInfo> getFunctionColumns(String namePattern) throws SQLException {
         DatabaseMetaData meta = conn.getMetaData();
         String locSchema = DBUtils.maskPattern(schema);
         String locName = DBUtils.maskPattern(namePattern);
+        List<ParameterInfo> result = null;
         try (ResultSet rs = meta.getFunctionColumns(catalog, locSchema, locName, null)) {
-            columns = new ArrayList<ParameterInfo>();
+            result = new ArrayList<ParameterInfo>();
             while (rs.next()) {
                 ParameterInfo.Builder column = new ParameterInfo.Builder();
                 column.catalog(rs.getString(AbstractFieldInfo.COLUMN_FUNCTION_CAT)); // table catalog (may be null)
@@ -187,10 +195,10 @@ public class CallableInfo {
                 // for the input and output parameters. A value of 0 is returned if this row describes the function's
                 // return value.
                 // For result set columns, it is the ordinal position of the column in the result set starting from 1
-                columns.add(column.build());
+                result.add(column.build());
             }
         }
-        return columns;
+        return result;
     }
 
 }

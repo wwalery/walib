@@ -8,10 +8,11 @@ plugins {
   id 'maven-publish'
   id 'signing'
   id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
+  id 'com.github.ben-manes.versions' version "0.53.0"
 }
 
 
-ext.javaVersion = JavaVersion.VERSION_11
+ext.javaVersion = JavaVersion.VERSION_17
 
 java {
   sourceCompatibility = javaVersion
@@ -74,7 +75,8 @@ dependencies {
   testImplementation "ch.qos.logback:logback-core:${logbackVersion}"
 
   testImplementation "org.testcontainers:postgresql:${testcontainersPostgresVersion}"
-  testImplementation "org.postgresql:postgresql:42.7.3"
+  testImplementation "org.postgresql:postgresql:42.7.8"
+  testImplementation 'org.assertj:assertj-core:3.27.6'
 
 }
 
@@ -215,7 +217,7 @@ publishing {
                 packaging = "jar"
                 name.set("WALib")
                 url.set("https://github.com/wwalery/walib")
-                description.set("Flexible DTO Java classes generator. Generate classes from database metadata (schema)")
+                description.set("Common library - DB metadata, resource reading etc")
             
                 licenses {
                     license {
@@ -253,4 +255,24 @@ nexusPublishing {
     }
   }
 
+}
+
+ext.isNonStableVersion = { String version ->
+//  println("Check version: ${version}")
+  if (version ==~ /.+?-rc\d$/)
+    return true
+  if (version ==~ /.+?-M\d$/)
+    return true
+  if (version ==~ /.+?-alpha\d$/)
+    return true
+  if (version ==~ /.+?-beta\d$/)
+    return true
+  return false
+}
+
+tasks.named("dependencyUpdates").configure {
+  checkConstraints = true
+  rejectVersionIf {
+    isNonStableVersion(it.candidate.version)
+  }
 }

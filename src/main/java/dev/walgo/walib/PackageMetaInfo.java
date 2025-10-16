@@ -4,7 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -73,10 +74,10 @@ public class PackageMetaInfo {
             manifestPath = classFolder + MANIFEST_PATH;
         }
         try {
-            try (InputStream stream = new URL(manifestPath).openStream()) {
+            try (InputStream stream = new URI(manifestPath).toURL().openStream()) {
                 read(new Manifest(stream));
             }
-        } catch (IOException ex) {
+        } catch (IOException | URISyntaxException ex) {
             if (SHOW_STACKTRACE) {
                 LOG.error(String.format("Can't load manifest from manifest: [%s]", manifestPath), ex);
             } else {
@@ -93,8 +94,9 @@ public class PackageMetaInfo {
     public void read(File jarFile) {
         try {
             try (InputStream stream = new FileInputStream(jarFile)) {
-                JarInputStream jar = new JarInputStream(stream);
-                read(jar.getManifest());
+                try (JarInputStream jar = new JarInputStream(stream)) {
+                    read(jar.getManifest());
+                }
             }
         } catch (IOException ex) {
             if (SHOW_STACKTRACE) {
