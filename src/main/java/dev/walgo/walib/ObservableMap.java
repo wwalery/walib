@@ -72,6 +72,22 @@ public class ObservableMap<K, V> implements Map<K, V> {
     }
 
     @Override
+    public boolean equals(Object o) {
+        return delegate.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return delegate.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return delegate.toString();
+    }
+
+
+    @Override
     public Set<K> keySet() {
         // Mutations via keySet().remove() must be tracked
         return new ObservableKeySet(delegate.keySet());
@@ -142,6 +158,23 @@ public class ObservableMap<K, V> implements Map<K, V> {
             }
             set.clear();
         }
+
+        @Override
+        public boolean equals(Object o) {
+            return set.equals(o);
+        }
+
+        @Override
+        public int hashCode() {
+            return set.hashCode();
+        }
+
+        @Override
+        public String toString() {
+            return set.toString();
+        }
+
+
     }
 
     private class ObservableValues extends AbstractCollection<V> {
@@ -193,6 +226,21 @@ public class ObservableMap<K, V> implements Map<K, V> {
                 onChange.run();
             }
             values.clear();
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            return values.equals(o);
+        }
+
+        @Override
+        public int hashCode() {
+            return values.hashCode();
+        }
+
+        @Override
+        public String toString() {
+            return values.toString();
         }
     }
 
@@ -247,6 +295,21 @@ public class ObservableMap<K, V> implements Map<K, V> {
             }
             return result;
         }
+
+        @Override
+        public boolean equals(Object o) {
+            return set.equals(o);
+        }
+
+        @Override
+        public int hashCode() {
+            return set.hashCode();
+        }
+
+        @Override
+        public String toString() {
+            return set.toString();
+        }
     }
 
     private class ObservableEntry implements Entry<K, V> {
@@ -281,5 +344,11 @@ public class ObservableMap<K, V> implements Map<K, V> {
         public int hashCode() {
             return entry.hashCode();
         }
+
+        @Override
+        public String toString() {
+            return entry.toString();
+        }
+
     }
 }

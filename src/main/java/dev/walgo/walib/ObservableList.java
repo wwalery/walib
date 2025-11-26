@@ -41,4 +41,19 @@ public class ObservableList<T> extends AbstractList<T> {
         return delegate.size();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        return delegate.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return delegate.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return delegate.toString();
+    }
+
 }
